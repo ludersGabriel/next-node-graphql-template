@@ -14,10 +14,15 @@ module.exports = {
     [
       'module-resolver', {
         alias: {
-          '@controllers': './src/controllers'
+          '@controllers': './src/controllers',
+          "@utils": "./src/utils"
         }
-      }
-    ]
+      },
+
+    ],
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    "babel-plugin-transform-typescript-metadata"
   ],
   ignore: [
     './src/tests'

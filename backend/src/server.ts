@@ -1,11 +1,27 @@
-import express from 'express'
+import 'reflect-metadata'
+import { ApolloServer } from 'apollo-server'
+import { buildSchema } from 'type-graphql'
+import { context } from './context'
+import path from 'path'
 
-const app = express()
+const main = async () => {
+  const schema = await buildSchema({
+    resolvers: [path.join(__dirname, '/components/**/*.resolver.{ts,js}')]
+  })
 
-app.get('/', (req, resp) => {
-  return resp.json({ message: 'Hello world' })
-})
+  const apolloServer = new ApolloServer({
+    schema,
+    context
+  })
 
-app.listen(4000, () => {
-  console.log('app running on port 4000')
-})
+  apolloServer
+    .listen(4000)
+    .then(({ url }) => {
+      console.log(`Server is running at ${url}`)
+    })
+}
+
+main()
+  .catch(e => {
+    throw e
+  })
