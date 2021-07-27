@@ -1,50 +1,26 @@
-import { User } from './user'
-import { Arg, Ctx, Field, ID, InputType, Mutation, Query, Resolver } from 'type-graphql'
+import { User, UserRegisterInput, UserUpdateInput } from './user.dto'
+import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql'
 import { Context } from '../../context'
 import { hash } from '@utils/auth'
-import { IsEmail, MinLength } from 'class-validator'
-
-@InputType()
-class UserRegisterInput {
-  @Field()
-  @IsEmail()
-  email: string
-
-  @Field() password: string
-
-  @Field() name: string
-}
-
-@InputType()
-class UserUpdateInput {
-  @Field(() => ID) id: string
-  @Field({ nullable: true }) name?: string
-
-  @Field({ nullable: true })
-  @IsEmail()
-  email?: string
-
-  @Field({ nullable: true })
-  @MinLength(8)
-  password?: string
-}
+import { userRepo } from './user.repo'
 
 @Resolver(User)
 export class UserResolver {
+  private readonly userRepo = userRepo
+
   @Mutation(() => User)
   async registerUser (
-    @Arg('data') data: UserRegisterInput,
-    @Ctx() ctx: Context
+    @Arg('data') data: UserRegisterInput
   ): Promise<User> {
     const hashedPassword = await hash(data.password)
 
-    return ctx.prisma.user.create({
-      data: {
+    return this.userRepo.registerUser(
+      {
         email: data.email,
         name: data.name,
         password: hashedPassword
       }
-    })
+    )
   }
 
   @Mutation(() => User, { nullable: true })
