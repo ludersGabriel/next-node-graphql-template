@@ -19,7 +19,9 @@ export class UserRegisterInput {
   @IsEmail()
   email: string
 
-  @Field() password: string
+  @Field()
+  @MinLength(8)
+  password: string
 
   @Field() name: string
 }
@@ -27,6 +29,7 @@ export class UserRegisterInput {
 @InputType()
 export class UserUpdateInput {
   @Field(() => ID) id: string
+
   @Field({ nullable: true }) name?: string
 
   @Field({ nullable: true })
