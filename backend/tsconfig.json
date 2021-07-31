@@ -31,6 +31,12 @@
       ],
       "@utils/*":[
         "./src/utils/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@src/*": [
+        "./src/*"
       ]
     }
   },

@@ -2,6 +2,27 @@ import { ObjectType, Field, ID, InputType } from 'type-graphql'
 import { IsEmail, MinLength } from 'class-validator'
 
 @ObjectType()
+export class PrivateUser {
+  @Field(() => ID)
+  id: string
+
+  @Field()
+  email: string
+
+  @Field()
+  name: string
+
+  @Field()
+  count: number
+
+  @Field()
+  role: string
+
+  @Field()
+  password: string
+}
+
+@ObjectType()
 export class User {
   @Field((type) => ID)
   id: string
@@ -11,6 +32,12 @@ export class User {
 
   @Field()
   name: string
+
+  @Field()
+  count: number
+
+  @Field()
+  role: string
 }
 
 @InputType()
@@ -39,4 +66,7 @@ export class UserUpdateInput {
   @Field({ nullable: true })
   @MinLength(8)
   password?: string
+
+  @Field({ nullable: true })
+  count?: number
 }

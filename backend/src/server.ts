@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { ApolloServer } from 'apollo-server'
 import { buildSchema } from 'type-graphql'
-import { context } from './context'
+import { getUser } from '@utils/auth'
 import path from 'path'
 
 const main = async () => {
@@ -11,7 +11,15 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema,
-    context
+    context: ({ req }) => {
+      const token = req.headers.authorization || ''
+
+      const { user } = getUser(token)
+
+      return {
+        user
+      }
+    }
   })
 
   apolloServer

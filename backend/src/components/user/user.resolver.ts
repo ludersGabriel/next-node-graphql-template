@@ -1,7 +1,7 @@
 import { User, UserRegisterInput, UserUpdateInput } from './user.dto'
 import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql'
-import { Context } from '../../context'
-import { hash } from '@utils/auth'
+import { Context } from '@src/context'
+import { checkAuth, hash } from '@utils/auth'
 import { userRepo } from './user.repo'
 
 @Resolver(User)
@@ -25,8 +25,11 @@ export class UserResolver {
 
   @Mutation(() => User, { nullable: true })
   async updateUser (
-    @Arg('data') data: UserUpdateInput
+    @Arg('data') data: UserUpdateInput,
+    @Ctx() ctx: Context
   ): Promise<User> {
+    await checkAuth(ctx)
+
     if (data?.password) {
       data.password = await hash(data.password)
     }
@@ -36,8 +39,10 @@ export class UserResolver {
 
   @Mutation(() => User, { nullable: true })
   async deleteUser (
-    @Arg('id') id: string
+    @Arg('id') id: string,
+    @Ctx() ctx: Context
   ): Promise<User> {
+    await checkAuth(ctx)
     return this.userRepo.deleteUser(id)
   }
 
@@ -46,17 +51,16 @@ export class UserResolver {
     @Arg('id') id: string,
     @Ctx() ctx: Context
   ): Promise<User | null> {
-    return ctx.prisma.user.findUnique({
-      where: {
-        id
-      }
-    })
+    await checkAuth(ctx)
+    return this.userRepo.user(id)
   }
 
   @Query(() => [User])
   async users (
     @Ctx() ctx: Context
   ): Promise<User[]> {
-    return ctx.prisma.user.findMany()
+    await checkAuth(ctx, 'admin')
+
+    return this.userRepo.users()
   }
 }

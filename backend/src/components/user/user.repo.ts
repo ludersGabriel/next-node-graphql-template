@@ -1,8 +1,8 @@
-import { context } from 'src/context'
-import { UserRegisterInput, UserUpdateInput, User } from './user.dto'
+import { prisma } from '@src/context'
+import { UserRegisterInput, UserUpdateInput, User, PrivateUser } from './user.dto'
 
 export class UserRepo {
-  private readonly prisma = context.prisma
+  private readonly prisma = prisma
 
   async registerUser (
     data: UserRegisterInput
@@ -39,6 +39,16 @@ export class UserRepo {
     return this.prisma.user.findUnique({
       where: {
         id
+      }
+    })
+  }
+
+  async userByEmail (
+    email: string
+  ): Promise<PrivateUser | null> {
+    return this.prisma.user.findUnique({
+      where: {
+        email
       }
     })
   }
